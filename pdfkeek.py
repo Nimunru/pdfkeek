@@ -180,11 +180,11 @@ def begin(infile,outfile,outjson):
 	if outjson:
 		pathjson = open(outjson,'w')
 		resjson = {}
-		resjson['paths'] = []
 	if (not outfile) and (not outjson):
 		screen = True
 	bfs = open('badfiles','a')
 	if os.path.isfile(infile):
+		resjson['paths'] = []
 		try:
 			try:
 				f = open(infile,'rb')
@@ -228,6 +228,7 @@ def begin(infile,outfile,outjson):
 				if outfile:
 					pathfile.write('\n============['+str(num)+'] '+file+'============\r\n')
 				if outjson:
+					resjson['paths'] = []
 					resjson['id'] = num
 					resjson['filename'] = file
 				res = extract_paths(inf)
