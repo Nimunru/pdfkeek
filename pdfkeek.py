@@ -2,7 +2,7 @@
 
 import re, codecs, zlib, chardet
 from cStringIO import StringIO
-import sys, os, io, json
+import sys, os, io, json, tempfile
 import argparse
 
 '''
@@ -175,14 +175,14 @@ def extract_paths(inf):
 def begin(infile,outfile,outjson):
 
 	screen = False
+	resjson = {}
 	if outfile:
 		pathfile = open(outfile,'w')
 	if outjson:
 		pathjson = open(outjson,'w')
-		resjson = {}
 	if (not outfile) and (not outjson):
 		screen = True
-	bfs = open('badfiles','a')
+	bfs = open('badfiles.txt','a')
 	if os.path.isfile(infile):
 		resjson['paths'] = []
 		try:
@@ -260,7 +260,7 @@ def begin(infile,outfile,outjson):
 	if outjson:
 		print "RESULTS HAVE WRITTEN IN: "+outjson
 		pathjson.close()
-	print "ERROR FILES IN: badfiles"
+	print "ERROR FILES IN: badfiles.txt"
 	bfs.close()
 
 def main(argv):
@@ -278,19 +278,6 @@ def main(argv):
 	begin(args.infile,args.outfile,args.outjson)
 
 
-
-
 if __name__ == '__main__':
+	sys.stderr=tempfile.TemporaryFile()
 	main(sys.argv[1:])
-
-	# fn = "./mt2/m10.pdf"
-	# f = open(fn,'rb')
-	# res = extract_paths(f)
-	# print len(res)
-	# pathf = open('paths', 'wb')
-	# for r in res:
-	# 	r = throw_slash(r)
-	# 	da = re.compile('(\x00\x00)+|(\x00\s){2,}')
-	# 	r = da.sub('',r)
-	# 	print repr(r)
-	# 	pathf.write(r+'\r\n')
