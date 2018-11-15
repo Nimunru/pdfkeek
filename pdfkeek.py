@@ -72,6 +72,8 @@ def forUTF16(s):
 	# print r
 	return r
 
+
+
 '''
 提取objstm
 '''
@@ -122,17 +124,35 @@ class extPDF:
 				continue
 		return self.compresseds
 
+def ext_paths_simple(inf):
+	pdfContents = inf.readlines()
+	_objs = []
+	for pdfContent in pdfContents:
+		if re.search(r'Alt', pdfContent, re.I):
+			_objs.append(pdfContent)
+
+	return _objs
+
 '''
 zlib解压，提取alt
 '''
-def extract_paths(inf):
-	extpdf = extPDF(inf)
+def extract_paths(infn):
+
+	objs = []
+	nf1 = open(infn, 'rb')
+	objs = ext_paths_simple(nf1)
+
+	nf2 = open(infn, 'rb')
+	extpdf = extPDF(nf2)
 	compresseds = extpdf.extract_Stms()
+	# print len(compresseds)
+	for x in range(0,len(compresseds)):
+		objs.append(zlib.decompress(compresseds[x]))
 
 # 提取路径并解码
 	paths = []
-	for x in range(0,len(compresseds)):
-		data = zlib.decompress(compresseds[x])
+	for x in range(0,len(objs)):
+		data = objs[x]
 		# lf.write(data)
 		path = re.findall(r'Alt\s*\((.*?)\)\s*[\/\>]', data, re.I)
 		if len(path) == 0:
@@ -194,7 +214,7 @@ def begin(infile,outfile,outjson):
 			if outjson:
 				resjson['id'] = 1
 				resjson['filename'] = infile
-			res = extract_paths(f)
+			res = extract_paths(infile)
 			for r in res:
 				r = throw_slash(r)
 				da = re.compile('(\x00\x00)+|(\x00\s){2,}')
@@ -231,7 +251,7 @@ def begin(infile,outfile,outjson):
 					resjson['paths'] = []
 					resjson['id'] = num
 					resjson['filename'] = file
-				res = extract_paths(inf)
+				res = extract_paths(infile+'/'+file)
 
 				for r in res:
 					r = throw_slash(r)
