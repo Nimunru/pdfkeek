@@ -136,13 +136,13 @@ def ext_paths_simple(inf):
 '''
 zlib解压，提取alt
 '''
-def extract_paths(infn):
+def extract_paths(ifn):
 
 	objs = []
-	nf1 = open(infn, 'rb')
+	nf1 = open(ifn, 'rb')
 	objs = ext_paths_simple(nf1)
 
-	nf2 = open(infn, 'rb')
+	nf2 = open(ifn, 'rb')
 	extpdf = extPDF(nf2)
 	compresseds = extpdf.extract_Stms()
 	# print len(compresseds)
